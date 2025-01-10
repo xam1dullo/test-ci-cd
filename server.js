@@ -11,6 +11,6 @@ app.use('/test2', (req, res) => {
   res.send("test 1 completed")
 })
 
-app.listen(3001, () => {
-  console.log("server  3001 port");
+app.listen(1956, () => {
+  console.log("server  1956 port");
 });
