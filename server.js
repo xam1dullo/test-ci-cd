@@ -12,5 +12,5 @@ app.use('/test2', (req, res) => {
 })
 
 app.listen(3001, () => {
-  console.log("server running on raa 3001 port");
+  console.log("server  3001 port");
 });
