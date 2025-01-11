@@ -26,6 +26,7 @@ jobs:
         run: |
           ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
           cd ${{ secrets.APP_PATH }}
+          echo $PWD
           git pull
           npm i
           npm run prod
