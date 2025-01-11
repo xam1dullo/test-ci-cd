@@ -13,6 +13,9 @@ app.use('/test2', (req, res) => {
 app.use('/abc', (req, res) => {
   res.send("abc!")
 })
+app.use('/aaa', (req, res) => {
+  res.send("aaa!")
+})
 
 app.listen(1956, () => {
   console.log("server  on va  in too 1956 port");

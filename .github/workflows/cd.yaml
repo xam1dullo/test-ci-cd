@@ -30,4 +30,5 @@ jobs:
           git pull
           npm i
           npm run prod
+          npx pm2 save
           ENDSSH

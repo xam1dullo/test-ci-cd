@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "start": "node server.js",
-    "prod": "pm2 restart javohir"
+    "prod": "pm2 restart test-ci-cd"
   },
   "keywords": [],
   "author": "",
