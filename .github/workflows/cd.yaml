@@ -43,7 +43,6 @@ jobs:
           ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
           docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_TOKEN}}
           docker pull ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_REPO}}:${{secrets.DOCKER_TAG}}
-          docker run -p 8181:4000 -d --name=${{secrets.container}} ${{secrets.registry}}/${{secrets.repo}}:${{secrets.docker_tag}}
           docker stop ${{secrets.CONTAINER}}
           docker rm ${{secrets.CONTAINER}}
           docker run -p 8181:4000 -d --name=${{secrets.container}} ${{secrets.registry}}/${{secrets.repo}}:${{secrets.docker_tag}}
