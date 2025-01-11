@@ -42,14 +42,10 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
-  
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: deploy to aws
-        run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }} 
-          docker images
+          cd ${{ secrets.APP_PATH }}
+          echo $PWD
+          git pull
+          npm i
+          npm run prod
+          npx pm2 save
+          ENDSSH
