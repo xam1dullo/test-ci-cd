@@ -27,38 +27,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout repository
+       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup SSH connection
-        uses: webfactory/ssh-agent@v0.5.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+       - name: Set up SSH key
+         run: |
+          env
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p 22 ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
-      - name: Adding Known Hosts
-        run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-
-
-      - name: Login to the GitHub Packages Docker Registry
-        run: ssh ${{secrets.USER}}@${{secrets.HOST}} "docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_TOKEN}}"
-
-      - name: Pull latest container
-        run: |
-          ssh ${{secrets.USER}}@${{secrets.HOST}} "docker pull ${{secrets.DOCKER_REPO}}/${{secrets.DOCKER_REPO}}:${{secrets.DOCKER_TAG}}"
-
-      - name: Stop deployed container
-        continue-on-error: true
-        run: |
-          ssh ${{secrets.USER}}@${{secrets.HOST}} "docker stop ${{secrets.CONTAINER}}"
-
-      - name: Remove deployed container
-        continue-on-error: true
-        run: |
-          ssh ${{secrets.USER}}@${{secrets.HOST}} "docker rm ${{secrets.CONTAINER}}"
-
-      - name: Start docker container
-        run: |
-          ssh ${{secrets.USER}}@${{secrets.HOST}} "docker run -p 8080:8080 -d --name=${{secrets.CONTAINER}} ${{secrets.REGISTRY}}/${{secrets.REPO}}:${{secrets.DOCKER_TAG}}"
-
-      - name: Logout from the GitHub Packages Docker Registry
-        run: ssh ${{secrets.USER}}@${{secrets.HOST}} "docker logout ${{secrets.REGISTRY}}"
+       - name: Deploy to server
+         run: |
+          ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
+          docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_TOKEN}}
+          docker pull ${{secrets.DOCKER_REPO}}/${{secrets.DOCKER_REPO}}:${{secrets.DOCKER_TAG}}
+          docker run -p 8080:4000 -d --name=${{secrets.container}} ${{secrets.registry}}/${{secrets.repo}}:${{secrets.docker_tag}}
+          docker stop ${{secrets.CONTAINER}}
+          docker rm ${{secrets.CONTAINER}}
+          docker run -p 8080:4000 -d --name=${{secrets.container}} ${{secrets.registry}}/${{secrets.repo}}:${{secrets.docker_tag}}
+          docker logout ${{secrets.REGISTRY}}
+          ENDSSH
+  
