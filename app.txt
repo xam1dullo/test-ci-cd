@@ -2,3 +2,6 @@ APP_PATH= sizning loyihangiz turgan joyning PATH i
 HOST=65.2.140.236
 SSH_KEY=*.pem fileni ichidani copy qil
 USER=bitnami
+
+
+hi=salim
