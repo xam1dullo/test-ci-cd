@@ -30,17 +30,19 @@ jobs:
        - name: Checkout repository
          uses: actions/checkout@v3
 
-       - name: Set up SSH key
-         run: |
-          env
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 22 ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+       - name: Set up SSH
+         uses: webfactory/ssh-agent@v0.5.3
+         with:
+           ssh-private-key: ${{ secrets.SSH_KEY }}
+       - name: Install rsync
+         run: sudo apt-get install -y rsync
 
-       - name: Deploy to server
+       - name: Sync files to server
          run: |
-          ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ root@34.47.239.157:${{secrets.APP_PATH}}
+       - name: Run deployment script
+         run: |
+          ssh -o StrictHostKeyChecking=no  ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
           cd ${{ secrets.APP_PATH }}
           echo $PWD
           git pull
@@ -48,4 +50,22 @@ jobs:
           npm run prod
           npx pm2 save
           ENDSSH
+      #  - name: Set up SSH key
+      #    run: |
+      #     env
+      #     mkdir -p ~/.ssh
+      #     echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+      #     chmod 600 ~/.ssh/id_rsa
+      #     ssh-keyscan -p 22 ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      #  - name: Deploy to server
+      #    run: |
+      #     ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
+      #     cd ${{ secrets.APP_PATH }}
+      #     echo $PWD
+      #     git pull
+      #     npm i
+      #     npm run prod
+      #     npx pm2 save
+      #     ENDSSH
   
