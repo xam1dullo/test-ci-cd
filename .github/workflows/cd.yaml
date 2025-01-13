@@ -37,9 +37,6 @@ jobs:
        - name: Install rsync
          run: sudo apt-get install -y rsync
 
-       - name: Sync files to server
-         run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ root@34.47.239.157:${{secrets.APP_PATH}}
        - name: Run deployment script
          run: |
           ssh -o StrictHostKeyChecking=no  ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
